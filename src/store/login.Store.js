@@ -9,7 +9,7 @@ export class LoginStore {
   }
 
   reqLogin = async (moblie, code) => {
-    const result = await login()
+    const result = await login(moblie, code)
     this.token = result.token
   }
 }

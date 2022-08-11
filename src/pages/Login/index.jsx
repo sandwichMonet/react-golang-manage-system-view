@@ -12,10 +12,11 @@ const Login = () => {
   // 点击登录按钮时触发 参数values即是表单输入数据
   const onFinish = async values => {
     const { mobile, code } = values
-    console.log(values)
+    console.log(mobile, code)
     try {
       await loginStore.reqLogin(mobile, code)
       navigate('/')
+      message.success('登录成功')
     } catch (err) {
       message.error(err.response?.data?.message || '登录失败')
     }
