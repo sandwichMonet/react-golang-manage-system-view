@@ -2,7 +2,6 @@
 
 import { Navigate } from 'react-router-dom'
 import { getToken } from '@/utils'
-import { message } from 'antd'
 
 const AuthRoute = ({ children }) => {
   const isToken = getToken()
