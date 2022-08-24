@@ -1,7 +1,5 @@
 import { request } from '@/utils'
 
-// 登录模块
-
 // 登录
 export const login = (mobile, code) =>
   request({
@@ -11,4 +9,11 @@ export const login = (mobile, code) =>
       mobile,
       code
     }
+  })
+
+// 获取用户信息
+export const getUserInfo = () =>
+  request({
+    url: '/user/profile',
+    method: 'GET'
   })

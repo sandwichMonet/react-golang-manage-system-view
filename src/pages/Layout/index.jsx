@@ -1,7 +1,10 @@
-import { Layout, Menu, Popconfirm } from 'antd'
+import { Layout, Menu, message, Popconfirm } from 'antd'
 import { HomeOutlined, DiffOutlined, EditOutlined, LogoutOutlined } from '@ant-design/icons'
 import './index.scss'
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { observer } from 'mobx-react-lite'
+import { useStore } from '@/store'
 
 const { Header, Sider } = Layout
 
@@ -10,14 +13,31 @@ const ViewLayout = () => {
   const location = useLocation()
   const selectedKey = location.pathname
 
+  // 获取用户信息
+  const { userStore, loginStore } = useStore()
+  console.log(userStore)
+  useEffect(() => {
+    try {
+      userStore.reqUserInfo()
+    } catch {}
+  }, [userStore])
+
+  // 退出登录回调函数
+  const navigate = useNavigate()
+  const loginOut = () => {
+    loginStore.loginOut()
+    message.success('退出成功')
+    navigate('/login')
+  }
+
   return (
     <Layout>
       <Header className="header">
         <div className="logo" />
         <div className="user-info">
-          <span className="user-name">user.name</span>
+          <span className="user-name">{userStore.userInfo.name}</span>
           <span className="user-logout">
-            <Popconfirm title="是否确认退出？" okText="退出" cancelText="取消">
+            <Popconfirm title="是否确认退出？" okText="退出" cancelText="取消" onConfirm={loginOut}>
               <LogoutOutlined /> 退出
             </Popconfirm>
           </span>
@@ -45,4 +65,4 @@ const ViewLayout = () => {
   )
 }
 
-export default ViewLayout
+export default observer(ViewLayout)
