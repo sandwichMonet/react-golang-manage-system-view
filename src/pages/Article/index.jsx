@@ -1,10 +1,13 @@
-import { Breadcrumb, Button, Card, DatePicker, Form, Radio, Select, Table, Tag, Space } from 'antd'
+import { Breadcrumb, Button, Card, DatePicker, Form, Radio, Select, Table, Tag, Space, Popconfirm } from 'antd'
 import BreadcrumbItem from 'antd/lib/breadcrumb/BreadcrumbItem'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import 'moment/locale/zh-cn'
 import locale from 'antd/lib/date-picker/locale/zh_CN'
 import img404 from '@/assets/error.png'
+import { getChannels, getArticle, deleteArticle } from '@/api'
+import { history } from '@/utils'
 const Article = () => {
   const columns = [
     {
@@ -44,28 +47,97 @@ const Article = () => {
       render: data => {
         return (
           <Space size="middle">
-            <Button type="primary" shape="circle" icon={<EditOutlined />} />
-            <Button type="primary" danger shape="circle" icon={<DeleteOutlined />} />
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<EditOutlined />}
+              onClick={() => history.push(`/home/publish?id=${data.id}`)}
+            />
+            <Popconfirm
+              title="确定要删除该条文章吗？"
+              onConfirm={() => reqDeleteArticle(data)}
+              okText="确认"
+              cancelText="取消"
+            >
+              <Button type="primary" danger shape="circle" icon={<DeleteOutlined />} />
+            </Popconfirm>
           </Space>
         )
       }
     }
   ]
 
-  const data = [
-    {
-      id: '8218',
-      comment_count: 0,
-      cover: {
-        images: ['http://geek.itheima.net/resources/images/15.jpg']
-      },
-      like_count: 0,
-      pubdate: '2019-03-11 09:00:00',
-      read_count: 2,
-      status: 2,
-      title: 'wkwebview离线化加载h5资源解决方案'
+  // 动态渲染频道列表
+  const [channels, setChannels] = useState([])
+  useEffect(() => {
+    async function fetchChannels() {
+      const result = await getChannels()
+      setChannels(result.data.data.channels)
     }
-  ]
+    fetchChannels()
+  }, [])
+
+  // 动态渲染文章列表
+  const [articleList, setArticleList] = useState({
+    list: [],
+    count: 0
+  })
+  // 发送请求的参数
+  const [params, setParams] = useState({
+    page: 1,
+    per_page: 10
+  })
+  useEffect(() => {
+    async function fetchArticle() {
+      const result = await getArticle(params)
+      const { results, total_count } = result.data.data
+      setArticleList({
+        list: results,
+        count: total_count
+      })
+    }
+    fetchArticle()
+  }, [params])
+
+  //筛选功能
+  const onSearch = values => {
+    const { status, channel_id, date } = values
+    // 格式化数据
+    const _params = {}
+    // 格式化status
+    _params.status = status
+    if (channel_id) {
+      _params.channel_id = channel_id
+    }
+    if (date) {
+      _params.begin_pubdate = date[0].format('YYYY-MM-DD')
+      _params.end_pubdate = date[1].format('YYYY-MM-DD')
+    }
+    // 修改params参数
+    setParams({
+      ...params,
+      ..._params
+    })
+  }
+
+  // 分页功能
+  const pageChange = page => {
+    setParams({
+      ...params,
+      page
+    })
+  }
+
+  // 删除功能
+  const reqDeleteArticle = async data => {
+    await deleteArticle(data.id)
+    // 更新articleList
+    setParams({
+      page: 1,
+      per_page: 10
+    })
+  }
+
   return (
     <div>
       <Card
@@ -79,7 +151,7 @@ const Article = () => {
         }
         style={{ marginBottom: 20 }}
       >
-        <Form initialValues={{ status: null }}>
+        <Form initialValues={{ status: null }} onFinish={onSearch}>
           <Form.Item label="状态" name="status">
             <Radio.Group>
               <Radio value={null}>全部</Radio>
@@ -91,8 +163,9 @@ const Article = () => {
           </Form.Item>
           <Form.Item label="频道" name="channel_id">
             <Select placeholder="请选择文章频道" defaultValue="lucy" style={{ width: 120 }}>
-              <Select.Option value="jack">Jack</Select.Option>
-              <Select.Option value="lucy">Lucy</Select.Option>
+              {channels.map(item => (
+                <Select.Option value={item.id}>{item.name}</Select.Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item label="日期" name="date">
@@ -106,8 +179,17 @@ const Article = () => {
         </Form>
       </Card>
       {/* table */}
-      <Card title={`根据筛选条件共查询到 count 条结果：`}>
-        <Table rowKey="id" columns={columns} dataSource={data} />
+      <Card title={`根据筛选条件共查询到 ${articleList.count} 条结果：`}>
+        <Table
+          columns={columns}
+          dataSource={articleList.list}
+          pagination={{
+            position: ['bottomCenter'],
+            current: params.page,
+            pageSize: params.per_page,
+            onChange: pageChange
+          }}
+        />
       </Card>
     </div>
   )
