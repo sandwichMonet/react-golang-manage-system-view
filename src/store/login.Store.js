@@ -15,7 +15,6 @@ export class LoginStore {
     this.token = result.data.data.token
 
     // 持久化token
-    console.log(this.token)
     setToken(this.token)
   }
 

@@ -10,7 +10,6 @@ export class UserStore {
   // 发送请求获取用户信息
   reqUserInfo = async () => {
     const result = await getUserInfo()
-    console.log(result.data.data)
     this.userInfo = result.data.data
   }
 }

@@ -6,8 +6,10 @@ import { useEffect, useState } from 'react'
 import 'moment/locale/zh-cn'
 import locale from 'antd/lib/date-picker/locale/zh_CN'
 import img404 from '@/assets/error.png'
-import { getChannels, getArticle, deleteArticle } from '@/api'
+import { getArticle, deleteArticle } from '@/api'
 import { history } from '@/utils'
+import { useStore } from '@/store'
+import { observer } from 'mobx-react-lite'
 const Article = () => {
   const columns = [
     {
@@ -68,14 +70,13 @@ const Article = () => {
   ]
 
   // 动态渲染频道列表
-  const [channels, setChannels] = useState([])
+  const { channelStore } = useStore()
+
   useEffect(() => {
-    async function fetchChannels() {
-      const result = await getChannels()
-      setChannels(result.data.data.channels)
-    }
-    fetchChannels()
-  }, [])
+    try {
+      channelStore.fetchChannel()
+    } catch {}
+  }, [channelStore])
 
   // 动态渲染文章列表
   const [articleList, setArticleList] = useState({
@@ -162,8 +163,8 @@ const Article = () => {
             </Radio.Group>
           </Form.Item>
           <Form.Item label="频道" name="channel_id">
-            <Select placeholder="请选择文章频道" defaultValue="lucy" style={{ width: 120 }}>
-              {channels.map(item => (
+            <Select placeholder="请选择文章频道" defaultValue="推荐" style={{ width: 120 }}>
+              {channelStore.channels.map(item => (
                 <Select.Option value={item.id}>{item.name}</Select.Option>
               ))}
             </Select>
@@ -195,4 +196,4 @@ const Article = () => {
   )
 }
 
-export default Article
+export default observer(Article)

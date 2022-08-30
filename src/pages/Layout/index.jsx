@@ -15,7 +15,7 @@ const ViewLayout = () => {
 
   // 获取用户信息
   const { userStore, loginStore } = useStore()
-  console.log(userStore)
+
   useEffect(() => {
     try {
       userStore.reqUserInfo()
