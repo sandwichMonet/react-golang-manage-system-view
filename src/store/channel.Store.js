@@ -11,8 +11,6 @@ export class ChannelStore {
   // 获取channel列表
   fetchChannel = async () => {
     const result = await getChannels()
-    console.log('$$$$$$$', result.data.data.channels)
     this.channels = result.data.data.channels
-    console.log('234234123', this.channels)
   }
 }

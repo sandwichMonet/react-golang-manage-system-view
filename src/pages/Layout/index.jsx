@@ -1,7 +1,7 @@
 import { Layout, Menu, message, Popconfirm } from 'antd'
 import { HomeOutlined, DiffOutlined, EditOutlined, LogoutOutlined } from '@ant-design/icons'
 import './index.scss'
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { observer } from 'mobx-react-lite'
 import { useStore } from '@/store'
@@ -45,17 +45,39 @@ const ViewLayout = () => {
       </Header>
       <Layout>
         <Sider width={200} className="site-layout-background">
-          <Menu mode="inline" theme="dark" selectedKeys={selectedKey} style={{ height: '100%', borderRight: 0 }}>
-            <Menu.Item icon={<HomeOutlined />} key="/">
-              <Link to="/">数据概览</Link>
-            </Menu.Item>
-            <Menu.Item icon={<DiffOutlined />} key="/article">
-              <Link to="/article">内容管理</Link>
-            </Menu.Item>
-            <Menu.Item icon={<EditOutlined />} key="/publish">
-              <Link to="/publish">发布文章</Link>
-            </Menu.Item>
-          </Menu>
+          <Menu
+            mode="inline"
+            theme="dark"
+            selectedKeys={selectedKey}
+            style={{ height: '100%', borderRight: 0 }}
+            items={[
+              {
+                key: '1',
+                icon: <HomeOutlined />,
+                label: `数据概览`,
+                onClick: () => {
+                  navigate('/')
+                }
+              },
+              {
+                key: '2',
+                icon: <DiffOutlined />,
+                label: '内容管理',
+                onClick: () => {
+                  navigate('/article')
+                }
+              },
+              {
+                key: '3',
+                icon: <EditOutlined />,
+                label: '发布文章',
+
+                onClick: () => {
+                  navigate('/publish')
+                }
+              }
+            ]}
+          />
         </Sider>
         <Layout className="layout-content" style={{ padding: 20 }}>
           <Outlet />

@@ -5,7 +5,7 @@ import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { useStore } from '@/store'
 import { observer } from 'mobx-react-lite'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './index.scss'
 
 const Publish = () => {
@@ -17,6 +17,40 @@ const Publish = () => {
   }, [channelStore])
   // 频道列表
   const { channels } = channelStore
+
+  // 上传图片
+  const [fileList, setFileList] = useState([])
+  // 使用ref暂存所有图片
+  const fileListRef = useRef([])
+  const onUploadChange = info => {
+    const fileList = info.fileList.map(file => {
+      console.log(file)
+      if (file.response) {
+        return {
+          url: file.response.data.url
+        }
+      }
+      return file
+    })
+    setFileList(fileList)
+    fileListRef.current = fileList
+  }
+
+  // 切换图片type并修改对应count
+  const [maxCount, setMaxCount] = useState(1)
+  const changeImgType = e => {
+    const count = e.target.value
+    setMaxCount(count)
+    if (count === 1) {
+      // 只展示一张
+      const firstImg = fileListRef.current[0]
+      setFileList(firstImg ? [firstImg] : [])
+    } else if (count === 3) {
+      // 展示三张
+      setFileList(fileListRef.current)
+    }
+  }
+
   return (
     <div className="publish">
       <Card
@@ -36,24 +70,38 @@ const Publish = () => {
           <Form.Item label="频道" name="channel_id" rules={[{ required: true, message: '请选择文章频道' }]}>
             <Select placeholder="请选择文章频道" style={{ width: 400 }}>
               {channels.map(item => (
-                <Select.Option value={item.id}>{item.name}</Select.Option>
+                <Select.Option value={item.id} key={item.id}>
+                  {item.name}
+                </Select.Option>
               ))}
             </Select>
           </Form.Item>
 
           <Form.Item label="封面">
             <Form.Item name="type">
-              <Radio.Group>
+              <Radio.Group onChange={changeImgType}>
                 <Radio value={1}>单图</Radio>
                 <Radio value={3}>三图</Radio>
                 <Radio value={0}>无图</Radio>
               </Radio.Group>
             </Form.Item>
-            <Upload name="image" listType="picture-card" className="avatar-uploader" showUploadList>
-              <div style={{ marginTop: 8 }}>
-                <PlusOutlined />
-              </div>
-            </Upload>
+            {maxCount > 0 && (
+              <Upload
+                name="image"
+                listType="picture-card"
+                className="avatar-uploader"
+                showUploadList
+                action="http://geek.itheima.net/v1_0/upload"
+                fileList={fileList}
+                onChange={onUploadChange}
+                maxCount={maxCount}
+                multiple={maxCount > 1}
+              >
+                <div style={{ marginTop: 8 }}>
+                  <PlusOutlined />
+                </div>
+              </Upload>
+            )}
           </Form.Item>
           <Form.Item label="内容" name="content" rules={[{ required: true, message: '请输入文章内容' }]}>
             <ReactQuill className="publish-quill" theme="snow" placeholder="请输入文章内容" />
