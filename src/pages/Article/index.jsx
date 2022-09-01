@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import 'moment/locale/zh-cn'
 import locale from 'antd/lib/date-picker/locale/zh_CN'
 import img404 from '@/assets/error.png'
-import { getArticle, deleteArticle } from '@/api'
+import { getArticles, deleteArticle } from '@/api'
 import { history } from '@/utils'
 import { useStore } from '@/store'
 import { observer } from 'mobx-react-lite'
@@ -53,7 +53,7 @@ const Article = () => {
               type="primary"
               shape="circle"
               icon={<EditOutlined />}
-              onClick={() => history.push(`/home/publish?id=${data.id}`)}
+              onClick={() => history.push(`/publish?id=${data.id}`)}
             />
             <Popconfirm
               title="确定要删除该条文章吗？"
@@ -90,7 +90,7 @@ const Article = () => {
   })
   useEffect(() => {
     async function fetchArticle() {
-      const result = await getArticle(params)
+      const result = await getArticles(params)
       const { results, total_count } = result.data.data
       setArticleList({
         list: results,
@@ -165,7 +165,9 @@ const Article = () => {
           <Form.Item label="频道" name="channel_id">
             <Select placeholder="请选择文章频道" defaultValue="推荐" style={{ width: 120 }}>
               {channelStore.channels.map(item => (
-                <Select.Option value={item.id}>{item.name}</Select.Option>
+                <Select.Option value={item.id} key={item.name}>
+                  {item.name}
+                </Select.Option>
               ))}
             </Select>
           </Form.Item>

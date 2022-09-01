@@ -6,15 +6,46 @@ import 'react-quill/dist/quill.snow.css'
 import { useStore } from '@/store'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useRef, useState } from 'react'
+import { getPublishParams, getArticle } from '@/api'
+import { useSearchParams } from 'react-router-dom'
 import './index.scss'
 
 const Publish = () => {
+  const onFinish = async value => {
+    // 处理数据
+    const { channel_id, content, title, type } = value
+    const params = {
+      channel_id,
+      content,
+      title,
+      type,
+      cover: {
+        type: type,
+        images: fileList.map(item => item.response.data.url)
+      }
+    }
+    await getPublishParams(params)
+  }
+
+  // 展示编辑时文案信息
+  const [params] = useSearchParams()
+  const articleId = params.get('id')
+
   const { channelStore } = useStore()
   useEffect(() => {
+    async function reqGetArticle() {
+      const result = await getArticle(articleId)
+      const { cover, ...formValue } = result.data.data
+      // 动态设置表单数据
+      Form.setFieldsValue({ ...formValue, type: cover.type })
+    }
+    if (articleId) {
+      reqGetArticle()
+    }
     try {
       channelStore.fetchChannel()
     } catch {}
-  }, [channelStore])
+  }, [channelStore, articleId])
   // 频道列表
   const { channels } = channelStore
 
@@ -51,6 +82,8 @@ const Publish = () => {
     }
   }
 
+  // 展示当前所编辑的文章内容
+
   return (
     <div className="publish">
       <Card
@@ -59,7 +92,7 @@ const Publish = () => {
             <Breadcrumb.Item>
               <Link to="/home">首页</Link>
             </Breadcrumb.Item>
-            <Breadcrumb.Item>发布文章</Breadcrumb.Item>
+            <Breadcrumb.Item>{articleId ? '修改文章' : '发布文章'}</Breadcrumb.Item>
           </Breadcrumb>
         }
       >
@@ -70,7 +103,7 @@ const Publish = () => {
           <Form.Item label="频道" name="channel_id" rules={[{ required: true, message: '请选择文章频道' }]}>
             <Select placeholder="请选择文章频道" style={{ width: 400 }}>
               {channels.map(item => (
-                <Select.Option value={item.id} key={item.id}>
+                <Select.Option value={item.id} key={item.name}>
                   {item.name}
                 </Select.Option>
               ))}
@@ -110,7 +143,7 @@ const Publish = () => {
           <Form.Item wrapperCol={{ offset: 4 }}>
             <Space>
               <Button size="large" type="primary" htmlType="submit">
-                发布文章
+                {articleId ? '修改文章' : '发布文章'}
               </Button>
             </Space>
           </Form.Item>

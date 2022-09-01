@@ -26,7 +26,7 @@ export const getChannels = () =>
   })
 
 // 获取文章表格数据
-export const getArticle = params =>
+export const getArticles = params =>
   request({
     url: '/mp/articles',
     method: 'GET',
@@ -38,4 +38,19 @@ export const deleteArticle = id =>
   request({
     url: `/mp/articles/${id}`,
     method: 'DELETE'
+  })
+
+// 发布文章
+export const getPublishParams = params =>
+  request({
+    url: `/mp/articles?draft=false`,
+    method: 'POST',
+    params
+  })
+
+// 根据id参数获取某一个文章信息
+export const getArticle = id =>
+  request({
+    url: `/mp/articles/${id}`,
+    method: 'GET'
   })
