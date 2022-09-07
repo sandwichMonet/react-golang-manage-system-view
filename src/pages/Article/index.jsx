@@ -1,48 +1,59 @@
 import { Breadcrumb, Button, Card, DatePicker, Form, Radio, Select, Table, Tag, Space, Popconfirm } from 'antd'
 import BreadcrumbItem from 'antd/lib/breadcrumb/BreadcrumbItem'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import 'moment/locale/zh-cn'
 import locale from 'antd/lib/date-picker/locale/zh_CN'
 import img404 from '@/assets/error.png'
 import { getArticles, deleteArticle } from '@/api'
-import { history } from '@/utils'
 import { useStore } from '@/store'
 import { observer } from 'mobx-react-lite'
 const Article = () => {
+  // 跳转到对应的文章编辑页面
+  const navigate = useNavigate()
+  const goPublish = id => {
+    navigate(`/publish?id=${id}`)
+  }
   const columns = [
     {
       title: '封面',
       dataIndex: 'cover',
       width: 120,
-      render: cover => <img src={cover || img404} width={80} height={60} alt="" />
+      render: cover => <img src={cover.images[1] || img404} width={80} height={60} alt="" />,
+      key: 'cover'
     },
     {
       title: '标题',
       dataIndex: 'title',
-      width: 220
+      width: 220,
+      key: 'title'
     },
     {
       title: '状态',
       dataIndex: 'status',
-      render: data => <Tag color="green">审核通过</Tag>
+      render: data => <Tag color="green">审核通过</Tag>,
+      key: 'status'
     },
     {
       title: '发布时间',
-      dataIndex: 'pubdate'
+      dataIndex: 'pubdate',
+      key: 'pubdate'
     },
     {
       title: '阅读数',
-      dataIndex: 'read_count'
+      dataIndex: 'read_count',
+      key: 'read_count'
     },
     {
       title: '评论数',
-      dataIndex: 'comment_count'
+      dataIndex: 'comment_count',
+      key: 'comment_count'
     },
     {
       title: '点赞数',
-      dataIndex: 'like_count'
+      dataIndex: 'like_count',
+      key: 'like_count'
     },
     {
       title: '操作',
@@ -53,7 +64,8 @@ const Article = () => {
               type="primary"
               shape="circle"
               icon={<EditOutlined />}
-              onClick={() => history.push(`/publish?id=${data.id}`)}
+              // 跳转到对应id的文章编辑页面
+              onClick={() => goPublish(data.id)}
             />
             <Popconfirm
               title="确定要删除该条文章吗？"
@@ -65,7 +77,8 @@ const Article = () => {
             </Popconfirm>
           </Space>
         )
-      }
+      },
+      key: 'operation'
     }
   ]
 
@@ -92,6 +105,7 @@ const Article = () => {
     async function fetchArticle() {
       const result = await getArticles(params)
       const { results, total_count } = result.data.data
+      results.map(item => (item.key = item.id))
       setArticleList({
         list: results,
         count: total_count
@@ -152,10 +166,10 @@ const Article = () => {
         }
         style={{ marginBottom: 20 }}
       >
-        <Form initialValues={{ status: null }} onFinish={onSearch}>
+        <Form initialValues={{ status: null, channel_id: '推荐' }} onFinish={onSearch}>
           <Form.Item label="状态" name="status">
             <Radio.Group>
-              <Radio value={null}>全部</Radio>
+              <Radio value={null || ''}>全部</Radio>
               <Radio value={0}>草稿</Radio>
               <Radio value={1}>待审核</Radio>
               <Radio value={2}>审核通过</Radio>
@@ -163,9 +177,9 @@ const Article = () => {
             </Radio.Group>
           </Form.Item>
           <Form.Item label="频道" name="channel_id">
-            <Select placeholder="请选择文章频道" defaultValue="推荐" style={{ width: 120 }}>
+            <Select placeholder="请选择文章频道" style={{ width: 120 }}>
               {channelStore.channels.map(item => (
-                <Select.Option value={item.id} key={item.name}>
+                <Select.Option value={item.id || ''} key={item.name}>
                   {item.name}
                 </Select.Option>
               ))}
