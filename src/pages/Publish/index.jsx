@@ -1,16 +1,21 @@
-import { Card, Breadcrumb, Form, Button, Radio, Input, Upload, Space, Select } from 'antd'
+import { Card, Breadcrumb, Form, Button, Radio, Input, Upload, Space, Select, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { useStore } from '@/store'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useRef, useState } from 'react'
-import { getPublishParams, getArticle } from '@/api'
+import { getArticle, updateArticle, addArticle } from '@/api'
 import { useSearchParams } from 'react-router-dom'
 import './index.scss'
 
 const Publish = () => {
+  const navigate = useNavigate()
+  // 展示编辑时文案信息
+  const [params] = useSearchParams()
+  const articleId = params.get('id')
+
   const onFinish = async value => {
     // 处理数据
     const { channel_id, content, title, type } = value
@@ -21,23 +26,41 @@ const Publish = () => {
       type,
       cover: {
         type: type,
-        images: fileList.map(item => item.response.data.url)
+        images: fileList.map(item => {
+          return item.url
+        })
       }
     }
-    await getPublishParams(params)
+
+    if (articleId) {
+      // 如果有文章id说明该文章已存在，则进行修改操作
+      const result = await updateArticle(params, articleId)
+
+      if (result.data.message === 'OK') {
+        message.success('修改成功')
+        navigate('/article')
+      }
+    } else {
+      const result = await addArticle(params)
+      if (result.data.message === 'OK') {
+        message.success('发表成功')
+      }
+    }
   }
-
-  // 展示编辑时文案信息
-  const [params] = useSearchParams()
-  const articleId = params.get('id')
-
+  const publishForm = useRef(null)
   const { channelStore } = useStore()
   useEffect(() => {
     async function reqGetArticle() {
       const result = await getArticle(articleId)
       const { cover, ...formValue } = result.data.data
       // 动态设置表单数据
-      Form.setFieldsValue({ ...formValue, type: cover.type })
+      publishForm.current.setFieldsValue({ ...formValue, type: cover.type })
+
+      // 格式化显示封面图片
+      const imageList = cover.images.map(url => ({ url }))
+      setFileList(imageList)
+      setMaxCount(cover.type)
+      fileListRef.current = imageList
     }
     if (articleId) {
       reqGetArticle()
@@ -55,7 +78,6 @@ const Publish = () => {
   const fileListRef = useRef([])
   const onUploadChange = info => {
     const fileList = info.fileList.map(file => {
-      console.log(file)
       if (file.response) {
         return {
           url: file.response.data.url
@@ -96,7 +118,13 @@ const Publish = () => {
           </Breadcrumb>
         }
       >
-        <Form labelCol={{ span: 4 }} wrapperCol={{ span: 16 }} initialValues={{ content: '' }}>
+        <Form
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 16 }}
+          initialValues={{ content: '' }}
+          ref={publishForm}
+          onFinish={onFinish}
+        >
           <Form.Item label="标题" name="title" rules={[{ required: true, message: '请输入文章标题' }]}>
             <Input placeholder="请输入文章标题" style={{ width: 400 }} />
           </Form.Item>

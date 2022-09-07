@@ -40,17 +40,25 @@ export const deleteArticle = id =>
     method: 'DELETE'
   })
 
-// 发布文章
-export const getPublishParams = params =>
-  request({
-    url: `/mp/articles?draft=false`,
-    method: 'POST',
-    params
-  })
-
 // 根据id参数获取某一个文章信息
 export const getArticle = id =>
   request({
     url: `/mp/articles/${id}`,
     method: 'GET'
+  })
+
+// 修改文章
+export const updateArticle = (data, id) =>
+  request({
+    url: `/mp/articles/${id}`,
+    method: 'PUT',
+    data
+  })
+
+// 新增文章
+export const addArticle = data =>
+  request({
+    url: `/mp/articles?draft=false`,
+    method: 'POST',
+    data
   })
