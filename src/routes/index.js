@@ -1,11 +1,19 @@
 import { Routes, Route } from 'react-router-dom'
-import Layout from '@/pages/Layout'
-import Login from '@/pages/Login'
-import AuthRoute from '@/components/AuthRoute'
-import Home from '@/pages/Home'
-import Article from '@/pages/Article'
-import Publish from '@/pages/Publish'
+import { lazy } from 'react'
+// import Layout from '@/pages/Layout'
+// import Login from '@/pages/Login'
+// import AuthRoute from '@/components/AuthRoute'
+// import Home from '@/pages/Home'
+// import Article from '@/pages/Article'
+// import Publish from '@/pages/Publish'
 
+// lazy-load component
+const Layout = lazy(() => import('@/pages/Layout'))
+const Login = lazy(() => import('@/pages/Login'))
+const AuthRoute = lazy(() => import('@/components/AuthRoute'))
+const Home = lazy(() => import('@/pages/Home'))
+const Article = lazy(() => import('@/pages/Article'))
+const Publish = lazy(() => import('@/pages/Publish'))
 const MyRoutes = () => {
   return (
     <Routes>
