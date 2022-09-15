@@ -1,8 +1,15 @@
 import { Layout, Menu, message, Popconfirm } from 'antd'
-import { HomeOutlined, DiffOutlined, EditOutlined, LogoutOutlined } from '@ant-design/icons'
+import {
+  HomeOutlined,
+  DiffOutlined,
+  EditOutlined,
+  LogoutOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined
+} from '@ant-design/icons'
 import './index.scss'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { observer } from 'mobx-react-lite'
 import { useStore } from '@/store'
 
@@ -30,10 +37,18 @@ const ViewLayout = () => {
     navigate('/login')
   }
 
+  const [collapsed, setCollapsed] = useState(false)
+
   return (
     <Layout>
       <Header className="header">
         <div className="logo" />
+        <div className="openSider">
+          {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+            className: 'trigger',
+            onClick: () => setCollapsed(!collapsed)
+          })}
+        </div>
         <div className="user-info">
           <span className="user-name">{userStore.userInfo.name}</span>
           <span className="user-logout">
@@ -44,7 +59,7 @@ const ViewLayout = () => {
         </div>
       </Header>
       <Layout>
-        <Sider width={200} className="site-layout-background">
+        <Sider width={200} className="site-layout-background" trigger={null} collapsible collapsed={collapsed}>
           <Menu
             mode="inline"
             theme="dark"

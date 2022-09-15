@@ -10,14 +10,27 @@ const echartInit = (node, xData, sData, title) => {
     },
     tooltip: {},
     xAxis: {
-      data: xData
+      data: xData,
+      axisLabel: {
+        formatter: '{value} (%)'
+      }
     },
-    yAxis: {},
+    yAxis: {
+      min: 0,
+      max: 100,
+      interval: 20,
+      axisLabel: {
+        formatter: '{value} %'
+      }
+    },
     series: [
       {
         name: '销量',
         type: 'bar',
-        data: sData
+        data: sData,
+        tooltip: {
+          valueFormatter: value => value + ' %'
+        }
       }
     ]
   })

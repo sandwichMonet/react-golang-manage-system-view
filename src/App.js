@@ -6,7 +6,7 @@ import { history } from './utils'
 import MyRoutes from './routes'
 function App() {
   return (
-    <div className="App">
+    <div className="App" style={{ height: '100%' }}>
       <BrowserRouter history={history}>
         <Suspense
           fallback={
