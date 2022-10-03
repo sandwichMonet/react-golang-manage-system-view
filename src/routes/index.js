@@ -14,6 +14,7 @@ const AuthRoute = lazy(() => import('@/components/AuthRoute'))
 const Home = lazy(() => import('@/pages/Home'))
 const Article = lazy(() => import('@/pages/Article'))
 const Publish = lazy(() => import('@/pages/Publish'))
+const CommunityActive = lazy(() => import('@/pages/CommunityActive'))
 const MyRoutes = () => {
   return (
     <Routes>
@@ -29,6 +30,7 @@ const MyRoutes = () => {
         <Route index element={<Home />} />
         <Route path="article" element={<Article />} />
         <Route path="publish" element={<Publish />} />
+        <Route path="communityactive" element={<CommunityActive />} />
       </Route>
       <Route path="/login" element={<Login />} />
     </Routes>
