@@ -1,4 +1,4 @@
-import { Card, Button, Tag, Space, Table, Row, Col, Divider, Drawer, Popconfirm } from 'antd'
+import { Card, Button, Tag, Space, Table, Row, Col, Divider, Drawer, Popconfirm, Modal, Form, Input } from 'antd'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { PlusOutlined, DeleteFilled } from '@ant-design/icons'
 import './index.scss'
@@ -29,6 +29,18 @@ const CommunityActive = () => {
       setPopconfirmLoading(false)
       setDeletePopconfirm(false)
     }, 3000)
+  }
+
+  // 新增表单
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // 新增活动表单
+  const onFinish = values => {
+    console.log('Success:', values)
+  }
+
+  const onFinishFailed = errorInfo => {
+    console.log('Failed:', errorInfo)
   }
 
   // 活动表格数据
@@ -159,7 +171,13 @@ const CommunityActive = () => {
         <Card
           title="社区活动管理"
           extra={
-            <Button type="primary" size="middle" icon={<PlusOutlined />} style={{ width: '10rem' }}>
+            <Button
+              type="primary"
+              size="middle"
+              icon={<PlusOutlined />}
+              style={{ width: '10rem' }}
+              onClick={() => setIsModalOpen(true)}
+            >
               新增活动
             </Button>
           }
@@ -170,6 +188,7 @@ const CommunityActive = () => {
           <Table columns={activeTableData.dataColumns} dataSource={activeTableData.dataList} />
         </Card>
       </div>
+      {/* 点击详情按钮弹出的抽屉信息框 */}
       <Drawer width={640} placement="right" closable={false} onClose={drawerClose} open={openDrawer}>
         <p
           className="site-description-item-profile-p"
@@ -254,6 +273,81 @@ const CommunityActive = () => {
           </Col>
         </Row>
       </Drawer>
+      {/* 点击新增按钮弹出的内嵌表单对话框 */}
+      <Modal
+        title="新增活动"
+        open={isModalOpen}
+        onOk={() => setIsModalOpen(false)}
+        onCancel={() => setIsModalOpen(false)}
+      >
+        <Form
+          name="basic"
+          labelCol={{
+            span: 4
+          }}
+          wrapperCol={{
+            span: 20
+          }}
+          initialValues={{
+            remember: true
+          }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+        >
+          <Form.Item
+            label="标题"
+            name="title"
+            rules={[
+              {
+                required: true,
+                message: '请输入活动标题'
+              }
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="发布者"
+            name="publisher"
+            rules={[
+              {
+                required: true,
+                message: '请输入发布者'
+              }
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="描述"
+            name="desc"
+            rules={[
+              {
+                required: true,
+                message: '请输入活动描述'
+              }
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="内容"
+            name="text"
+            rules={[
+              {
+                required: true,
+                message: '请输入活动内容'
+              }
+            ]}
+          >
+            <Input.TextArea />
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   )
 }
