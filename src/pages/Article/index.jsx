@@ -157,9 +157,9 @@ const Article = () => {
     <div>
       <Card
         title={
-          <Breadcrumb separator>
+          <Breadcrumb separator=">">
             <BreadcrumbItem>
-              <Link to="/home">首页</Link>
+              <Link to="/">首页</Link>
             </BreadcrumbItem>
             <BreadcrumbItem>内容管理</BreadcrumbItem>
           </Breadcrumb>

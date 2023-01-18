@@ -112,7 +112,7 @@ const Publish = () => {
         title={
           <Breadcrumb separator=">">
             <Breadcrumb.Item>
-              <Link to="/home">首页</Link>
+              <Link to="/">首页</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>{articleId ? '修改文章' : '发布文章'}</Breadcrumb.Item>
           </Breadcrumb>

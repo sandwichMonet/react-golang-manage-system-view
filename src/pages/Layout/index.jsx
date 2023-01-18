@@ -5,7 +5,8 @@ import {
   EditOutlined,
   LogoutOutlined,
   MenuUnfoldOutlined,
-  MenuFoldOutlined
+  MenuFoldOutlined,
+  BarsOutlined,
 } from '@ant-design/icons'
 import './index.scss'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
@@ -86,9 +87,16 @@ const ViewLayout = () => {
                 key: '3',
                 icon: <EditOutlined />,
                 label: '发布文章',
-
                 onClick: () => {
                   navigate('/publish')
+                }
+              },
+              {
+                key: '4',
+                icon: <BarsOutlined />,
+                label: '社区活动',
+                onClick: () => {
+                  navigate('/communityactive')
                 }
               }
             ]}

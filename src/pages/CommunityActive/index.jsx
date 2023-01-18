@@ -1,8 +1,10 @@
-import { Card, Button, Tag, Space, Table, Row, Col, Divider, Drawer, Popconfirm, Modal, Form, Input } from 'antd'
+import { Breadcrumb,Card, Button, Tag, Space, Table, Row, Col, Divider, Drawer, Popconfirm, Modal, Form, Input } from 'antd'
+import BreadcrumbItem from 'antd/lib/breadcrumb/BreadcrumbItem'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { PlusOutlined, DeleteFilled } from '@ant-design/icons'
 import './index.scss'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 // 定义antd默认属性
 const DescriptionItem = ({ title, content }) => (
@@ -169,7 +171,14 @@ const CommunityActive = () => {
     <>
       <div className="active-header">
         <Card
-          title="社区活动管理"
+                  title={
+                    <Breadcrumb separator=">">
+                      <BreadcrumbItem>
+                        <Link to="/">首页</Link>
+                      </BreadcrumbItem>
+                      <BreadcrumbItem>社区活动管理</BreadcrumbItem>
+                    </Breadcrumb>
+                  }
           extra={
             <Button
               type="primary"
@@ -243,7 +252,7 @@ const CommunityActive = () => {
             <DescriptionItem title="Department" content="XTech" />
           </Col>
           <Col span={12}>
-            <DescriptionItem title="Supervisor" content={<a href>Lin</a>} />
+            <DescriptionItem title="Supervisor" content={<a href="true">Lin</a>} />
           </Col>
         </Row>
         <Row>
@@ -268,7 +277,7 @@ const CommunityActive = () => {
           <Col span={24}>
             <DescriptionItem
               title="Github"
-              content={<a href="http://github.com/ant-design/ant-design/">github.com/ant-design/ant-design/</a>}
+              content={<a href="true">github.com/ant-design/ant-design/</a>}
             />
           </Col>
         </Row>
